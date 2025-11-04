@@ -1,18 +1,26 @@
 # 醫療掛號資料分析系統（Hospital Data Analytics Pipeline）
-## 目標
+**目標**
 本專案模擬醫院資訊系統（HIS）的資料整合與分析流程，透過 **資料倉儲（DWH）建置、ETL 自動化、dbt 建模、Tableau 視覺化**，最終建立一個可即時觀察每日就診趨勢與科別分佈的數據平台。
 
 ---
 
 ## 架構邏輯總覽
+[MySQL (HIS 模擬資料)]
+    ↓  Airbyte (CDC 資料同步)
+[PostgreSQL DWH]
+    ↓  dbt (資料建模)
+[marts: daily_kpis, patients_with_kpis, daily_department_kpis]
+    ↓
+[Tableau Public Dashboard]
 
-### 1.Data Source：HIS 系統（MySQL）
+
+**1.Data Source：HIS 系統（MySQL）**
 - Python 建立模擬表
 - 以 Faker 產生假資料模擬真實場景
 
 ---
 
-### 2.Data Ingestion：資料同步（Airbyte）
+**2.Data Ingestion：資料同步（Airbyte）**
 - Airbyte 負責自動將 **MySQL → PostgreSQL** 的資料同步
 - 支援 **CDC（Change Data Capture）**
 - 每個來源表格對應 PostgreSQL 的「public schema」。
@@ -20,7 +28,7 @@
 
 ---
 
-### 3.dbt（資料建模）
+**3.dbt（資料建模）**
 資料分為三層架構：
 
 | 層級 | 命名規則 | 內容說明 |
@@ -29,7 +37,7 @@
 | **intermediate 層 (int_)** | `int_patient_visits` | 整合多表資訊 |
 | **mart 層 (marts_)** | `daily_kpis`, `patients_with_kpis`, `daily_department_kpis` | 產出分析用 KPI |
 
-主要模型：
+*主要模型：*
 - models/
     - staging/
         - stg_patients.sql 清洗病患資料

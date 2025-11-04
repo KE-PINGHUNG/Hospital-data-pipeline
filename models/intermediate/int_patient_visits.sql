@@ -8,8 +8,8 @@ WITH appointments AS (
         doctor_id,
         -- 計算等候時間（如果 check_in_time 存在的話）
         EXTRACT(EPOCH FROM (check_in_time - appointment_date)) / 60 AS wait_time_minutes 
-        -- 假設你的 stg_appointment 已經包含了 check_in_time 欄位
-        -- 如果沒有，你需要先將 check_in_time 加入 stg_appointment 才能計算
+        -- 假設 stg_appointment 已經包含了 check_in_time 欄位
+        -- 如果沒有需要先將 check_in_time 加入 stg_appointment 才能計算
     FROM {{ ref('stg_appointment') }}
 ),
 

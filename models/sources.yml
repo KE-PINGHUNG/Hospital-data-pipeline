@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: my_mysql
+    schema: public # Airbyte 載入數據的 schema
+    tables:
+      - name: patients
+      - name: appointment
+      - name: diagnosis     
+      - name: lab_result 

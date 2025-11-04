@@ -1,15 +1,55 @@
-Welcome to your new dbt project!
+# 🏥 醫療掛號資料分析系統（Hospital Data Analytics Pipeline）
 
-### Using the starter project
+## 🎯 專案目標
+本專案模擬醫院資訊系統（HIS）的資料整合與分析流程，  
+透過 **資料倉儲（DWH）建置、ETL 自動化、dbt 建模、Tableau 視覺化**，  
+最終建立一個可即時觀察每日就診趨勢與科別分佈的數據平台。
 
-Try running the following commands:
-- dbt run
-- dbt test
+---
 
+## 🧩 架構邏輯總覽
 
-### Resources:
-- Learn more about dbt [in the docs](https://docs.getdbt.com/docs/introduction)
-- Check out [Discourse](https://discourse.getdbt.com/) for commonly asked questions and answers
-- Join the [chat](https://community.getdbt.com/) on Slack for live discussions and support
-- Find [dbt events](https://events.getdbt.com) near you
-- Check out [the blog](https://blog.getdbt.com/) for the latest news on dbt's development and best practices
+### 1️⃣ Data Source：HIS 系統（MySQL）
+- 建立三張模擬表：
+  - `patients`（病患基本資料）
+  - `appointments`（掛號紀錄）
+  - `lab_results`（檢驗結果）
+- 以 Faker 產生假資料模擬真實場景，並定期新增新紀錄。
+
+---
+
+### 2️⃣ Data Ingestion：資料同步（Airbyte）
+- Airbyte 負責自動將 **MySQL → PostgreSQL** 的資料同步。
+- 支援 **CDC（Change Data Capture）**。
+- 每個來源表格對應 PostgreSQL 的「raw schema」。
+
+> 💡 若只需分析靜態資料，Airbyte 可暫時停用。
+
+---
+
+### 3️⃣ Data Warehouse：PostgreSQL（資料倉儲）
+資料分為三層架構：
+
+| 層級 | 命名規則 | 內容說明 |
+|------|------------|------------|
+| **staging 層 (stg_)** | `stg_patients`, `stg_appointments`, `stg_lab_results` | 清洗與標準化欄位 |
+| **intermediate 層 (int_)** | `int_patient_visits` | 整合多表資訊 |
+| **mart 層 (marts_)** | `daily_kpis`, `patients_with_kpis`, `daily_department_kpis` | 產出分析用 KPI |
+
+---
+
+### 4️⃣ Transformation：dbt（資料建模）
+使用 dbt 管理 SQL 模型版本化與自動執行。
+
+主要模型：
+
+| 模型名稱 | 說明 |
+|-----------|------|
+| `stg_patients.sql` | 清洗病患資料 |
+| `int_patient_visits.sql` | 整合掛號與檢驗資訊 |
+| `daily_kpis.sql` | 每日整體 KPI（掛號量、等待時間、異常率） |
+| `patients_with_kpis.sql` | 病患層級 KPI |
+| `daily_department_kpis.sql` | 每日科別掛號數與比例分析 |
+
+執行
+dbt run

@@ -1,5 +1,5 @@
 SELECT
-    -- 將 UUID 類型的主鍵明確轉換為字串 (PostgreSQL的習慣)
+    -- 將 UUID 類型的主鍵轉換為字串 (PostgreSQL)
     CAST(appointment_id AS VARCHAR) AS appointment_id,
     CAST(patient_id AS VARCHAR) AS patient_id,
 
@@ -9,7 +9,7 @@ SELECT
     doctor_id,
     check_in_time,
     status,
-    -- 根據你提供的真實數據 (Completed, NoShow, Cancelled) 進行中文轉換
+    -- 根據數據 (Completed, NoShow, Cancelled) 進行中文轉換
     CASE status
         WHEN 'Completed' THEN '已完成'
         WHEN 'NoShow'    THEN '未出席'
